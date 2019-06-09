@@ -1,3 +1,5 @@
+var myLineChart = null;
+
 // Set new default font family and font color to mimic Bootstrap's default styling
 Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
 Chart.defaults.global.defaultFontColor = '#858796';
@@ -33,10 +35,14 @@ function number_format(number, decimals, dec_point, thousands_sep) {
 function updateChart(json_data) {
 	// Area Chart Example
 	
+	if (myLineChart != null) {
+		myLineChart.destroy();
+	}
+
 	times = json_data.time;
 	clicks = json_data.click;
 	var ctx = document.getElementById("myAreaChart");
-	var myLineChart = new Chart(ctx, {
+	myLineChart = new Chart(ctx, {
 		type: 'line',
 		data: {
 			labels: times,
