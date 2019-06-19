@@ -1,4 +1,5 @@
 var myLineChart = null;
+var myPieChart = null;
 
 // Set new default font family and font color to mimic Bootstrap's default styling
 Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
@@ -133,6 +134,64 @@ function updateChart(json_data) {
 }
 
 
+var top1_count = 0;
+var top2_count = 0;
+var top3_count = 0;
+
+function updatePie(json_data, rank) {
+	// Area Chart Example
+
+	if (rank == 1){
+		top1_count = json_data.value
+	}
+	
+	if (rank == 2){
+		top2_count = json_data.value
+	}
+
+	if (rank == 3){
+		top3_count = json_data.value
+	}
+
+	if (myPieChart != null) {
+		myPieChart.destroy();
+	}
+
+	// Pie Chart Example
+	var ctx = document.getElementById("myPieChart");
+	var myPieChart = new Chart(ctx, {
+		type: 'doughnut',
+		data: {
+	    	labels: ["Top1", "Top2", "Top3"],
+	    	datasets: [{
+	    		data: [top1_count, top2_count, top3_count],
+	    		backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc'],
+	    		hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf'],
+	    		hoverBorderColor: "rgba(234, 236, 244, 1)",
+	    	}],
+		},
+		options: {
+	    	maintainAspectRatio: false,
+	    	tooltips: {
+	    		backgroundColor: "rgb(255,255,255)",
+	    		bodyFontColor: "#858796",
+	    		borderColor: '#dddfeb',
+	    		borderWidth: 1,
+	    		xPadding: 15,
+	    		yPadding: 15,
+	    		displayColors: false,
+	    		caretPadding: 10,
+	    	},
+	    	legend: {
+	    		display: false
+	    	},
+			cutoutPercentage: 80,
+		},
+	});
+
+}
+
+
 
 var db = firebase.firestore();
 db.collection("GoogleTrend").doc("Top 1").onSnapshot(function(doc) {
@@ -141,6 +200,8 @@ db.collection("GoogleTrend").doc("Top 1").onSnapshot(function(doc) {
 	$('#top1').text(json_data.name);
 
 	updateChart(json_data);
+	updatePie(json_data, 1);
+	getImage();
 
 });
 
@@ -149,6 +210,8 @@ db.collection("GoogleTrend").doc("Top 2").onSnapshot(function(doc) {
 	json_data = doc.data()
 	console.log("Top 2 data: ", json_data)
 	$('#top2').text(json_data.name);
+
+	updatePie(json_data, 2);
 });
 
 
@@ -156,6 +219,8 @@ db.collection("GoogleTrend").doc("Top 3").onSnapshot(function(doc) {
 	json_data = doc.data()
 	console.log("Top 3 data: ", json_data)
 	$('#top3').text(json_data.name);
+
+	updatePie(json_data, 3);
 });
 
 db.collection("GoogleTrend").doc("New").onSnapshot(function(doc) {
